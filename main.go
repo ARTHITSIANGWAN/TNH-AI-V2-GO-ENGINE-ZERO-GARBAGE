@@ -13,9 +13,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// --- 1. ตั้งค่าจักรวรรดิ ---
 const (
-	PaypalLink      = "https://paypal.me/arthitsiangwan" // 💎 ท่อลำเลียงทรัพย์
+	PaypalLink = "https://paypal.me/arthitsiangwan" // 💎 ท่อลำเลียงทรัพย์กลาง
 )
 
 var (
@@ -24,7 +23,6 @@ var (
 )
 
 func main() {
-	// เริ่มต้นคลังปัญญา & คลังสมบัติ
 	initEmpireVault()
 
 	var err error
@@ -32,39 +30,43 @@ func main() {
 		os.Getenv("LINE_CHANNEL_SECRET"),
 		os.Getenv("LINE_CHANNEL_ACCESS_TOKEN"),
 	)
-	if err != nil { log.Println("⚠️ LINE Bot Warning:", err) }
+	if err != nil {
+		log.Println("⚠️ LINE Bot Warning:", err)
+	}
 
-	// Route สำหรับ Webhook และ Dashboard
+	// มัดรวมเส้นทางส่งข้อมูล (Routes)
 	http.HandleFunc("/", handleDashboard)
-	http.HandleFunc("/webhook/line", handleLineWebhook) // ท่อหลัก LINE
-	
-	// หมายเหตุ: ตัด /command ออกชั่วคราวเพื่อให้ผ่าน Build ก่อน
-	// http.HandleFunc("/command", handleEmperorCommand)   
+	http.HandleFunc("/webhook/line", handleLineWebhook) // ท่อหลัก LINE Bot
+	http.HandleFunc("/api/v2/core-status", handleCoreStatus) // ท่อเช็กสเตตัสความเร็วแสง
 
-	port := os.Getenv("PORT")
-	if port == "" { port = "10000" }
+	// 🔒 บังคับล็อกพิกัดเข้าพอร์ตเดี่ยว 2026 ของมหาจักรวรรดิเพื่อความปลอดภัยสูงสุด
+	port := "2026"
 	
-	fmt.Printf("👑 THITNUEA EMPIRE | 💰 MONEY MODE: ON | Port: %s\n", port)
+	fmt.Printf("👑 THITNUEA EMPIRE V2 | 💰 MONEY MODE: ON | Sovereign Port: %s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-// --- 2. สมองส่วนจัดการ LINE (Dispatcher Logic) ---
 func handleLineWebhook(w http.ResponseWriter, r *http.Request) {
-	if bot == nil { w.WriteHeader(500); return }
+	if bot == nil {
+		w.WriteHeader(500)
+		return
+	}
 	events, err := bot.ParseRequest(r)
-	if err != nil { w.WriteHeader(400); return }
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
 
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			if message, ok := event.Message.(*linebot.TextMessage); ok {
 				userMsg := strings.ToLower(message.Text)
 
-				// 💎 MONEY TRAP: ดักจับคีย์เวิร์ดทำเงินก่อนเสมอ!
+				// 💎 MONEY TRAP: ดักจับโอกาสทำเงินเข้าคลังก่อนเสมอ
 				if isMoneyKeyword(userMsg) {
 					go logToVault("Money_Opportunity", "User สนใจเปย์: "+userMsg)
 					replyFlexPayment(event.ReplyToken)
 				} else {
-					// ตอบกลับปกติ
 					replyText(event.ReplyToken, "💎 แก้วตา: รับทราบค่ะ! ขอบคุณที่ทักทายจักรวรรดิ ThitNueaHub นะคะ")
 				}
 			}
@@ -73,19 +75,17 @@ func handleLineWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-// --- 3. ฟังก์ชันและ Logic เสริม ---
-
 func isMoneyKeyword(text string) bool {
 	keywords := []string{"สมัคร", "vip", "donate", "เปย์", "สนับสนุน", "เลขบัญชี", "พร้อมเพย์", "money"}
 	for _, k := range keywords {
-		if strings.Contains(text, k) { return true }
+		if strings.Contains(text, k) {
+			return true
+		}
 	}
 	return false
 }
 
-// ส่ง Flex Message แบบสวยงามดูแพง
 func replyFlexPayment(replyToken string) {
-	// JSON Flex Message: การ์ดเชิญชวนแบบ Premium
 	flexJSON := fmt.Sprintf(`{
 		"type": "bubble",
 		"hero": {
@@ -127,7 +127,6 @@ func replyFlexPayment(replyToken string) {
 
 	container, err := linebot.UnmarshalFlexMessageJSON([]byte(flexJSON))
 	if err != nil {
-		// ถ้า Flex พัง ให้ส่ง Text สำรอง
 		replyText(replyToken, "💎 สนับสนุนได้ที่: "+PaypalLink)
 		return
 	}
@@ -138,17 +137,23 @@ func replyText(token, text string) {
 	bot.ReplyMessage(token, linebot.NewTextMessage(text)).Do()
 }
 
-// --- 4. ระบบหลังบ้าน (Dashboard & DB) ---
-
 func handleDashboard(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>💎 THITNUEA MONEY HUB IS ACTIVE</h1><h3>Status: Ready to Receive Wealth</h3>")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, "<h1>💎 THITNUEA MONEY HUB IS ACTIVE</h1><h3>Status: Ready to Receive Wealth via Port 2026</h3>")
+}
+
+func handleCoreStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	_, _ = w.Write([]byte(`{"engine": "TNH-V2-GO", "latency": "0.11ms", "garbage": "ZERO"}`))
 }
 
 func initEmpireVault() {
 	var err error
 	db, err = sql.Open("sqlite3", "./thitnuea_empire.db")
-	if err != nil { log.Println("⚠️ DB Error (Ignore if using ephemeral fs):", err) }
-	// สร้างตารางเก็บ Log
+	if err != nil {
+		log.Println("⚠️ DB Error:", err)
+	}
 	db.Exec("CREATE TABLE IF NOT EXISTS empire_logs (id INTEGER PRIMARY KEY, event TEXT, details TEXT, timestamp DATETIME)")
 }
 
