@@ -1,4 +1,4 @@
-# 🛡️ ThitNuea-Bot-Go-Zerogarbage
+# 🛡️ TNH-AI_GO_ENGINE_ZERO_GARBAGE
 ### 💠 Emperor Protocol: Dark-Relay & Snake Nudge Fusion
 **License:** MIT | **Go Version:** 1.21+
 
