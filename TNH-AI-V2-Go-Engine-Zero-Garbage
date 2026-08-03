@@ -1,4 +1,4 @@
-TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE/
+tnh-ai-v2-engine-zero-garbage/
 ├── cmd/
 │   └── server/
 │       └── main.go          # จุดเริ่มต้นรันระบบ ทั้ง Telegram Bot + HTTP Engine
