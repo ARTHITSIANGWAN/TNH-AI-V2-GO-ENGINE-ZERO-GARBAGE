@@ -1,0 +1,11 @@
+TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE/
+├── cmd/
+│   └── server/
+│       └── main.go          # จุดเริ่มต้นรันระบบ ทั้ง Telegram Bot + HTTP Engine
+├── internal/
+│   ├── bot/                 # L2 คุณแก้วตา & Telegram Bot Handlers
+│   ├── engine/              # L5 ไอ้จ๊อด & Gripen Launch Strategy
+│   └── protocol/            # Helmet Error Recovery & 5ส (Zero-Garbage Clean)
+├── go.mod
+├── go.sum
+└── Dockerfile
