@@ -1,1 +1,43 @@
+// Project Name: TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE
+// Folder Path: /internal/engine/
+// File Name: engine.go
 
+package engine
+
+import (
+	"fmt"
+	"log"
+
+	"tnh_ai/internal/protocol"
+)
+
+// CoreEngine โครงสร้างเอ็นจิ้นหลักสำหรับประมวลผล
+type CoreEngine struct {
+	SecretKey string
+}
+
+// NewCoreEngine สร้างอินสแตนซ์ของเอ็นจิ้น
+func NewCoreEngine(secret string) *CoreEngine {
+	return &CoreEngine{
+		SecretKey: secret,
+	}
+}
+
+// ProcessCommand รับ Payload แล้วทำการประมวลผล
+func (e *CoreEngine) ProcessCommand(cmd protocol.CommandPayload) protocol.ResponsePayload {
+	log.Printf("⚡ [tnh_ai Engine] Processing Action: %s | Squadron: %s", cmd.Action, cmd.Squadron)
+
+	// ตัวอย่างการประมวลผลตาม Action
+	switch cmd.Action {
+	case "PING":
+		return protocol.ResponsePayload{
+			Status:  "success",
+			Message: "PONG! Engine Core fully operational.",
+		}
+	default:
+		return protocol.ResponsePayload{
+			Status:  "success",
+			Message: fmt.Sprintf("Executed action [%s] for squadron [%s]", cmd.Action, cmd.Squadron),
+		}
+	}
+}
