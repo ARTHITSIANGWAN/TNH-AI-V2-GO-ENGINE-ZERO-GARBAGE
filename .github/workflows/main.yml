@@ -1,0 +1,32 @@
+# Project Name: TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE
+# Folder Path: /.github/workflows/
+# File Name: main.yml
+
+name: TNH-AI Pure Go Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      # 1. ต้องมีขั้นตอน Checkout โค้ดเสมอ เพื่อให้มีไฟล์ go.mod และ .git อยู่ในเครื่อง
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. ตั้งค่าเวอร์ชัน Go ให้ตรงกับระบบ
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      # 3. รันการคอมไพล์โค้ดในโปรเจกต์
+      - name: Build Engine
+        run: |
+          go version
+          go build -o tnh_engine ./cmd/main.go
+          echo 'ThitNueaHub System Ready: ระบบพร้อมรันแบบตึงเปรี๊ยะเจ้า!'
+          
