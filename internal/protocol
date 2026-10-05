@@ -1,1 +1,36 @@
+// Project Name: TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE
+// Folder Path: /internal/protocol/
+// File Name: protocol.go
 
+package protocol
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+)
+
+// CommandPayload โครงสร้างข้อมูลคำสั่งที่ส่งเข้ามาในระบบ
+type CommandPayload struct {
+	CommandID string `json:"command_id"`
+	Action    string `json:"action"`
+	Squadron  string `json:"squadron"`
+	Timestamp int64  `json:"timestamp"`
+	Signature string `json:"signature"`
+}
+
+// ResponsePayload โครงสร้างข้อมูลตอบกลับมาตรฐาน
+type ResponsePayload struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+// VerifyHMAC ตรวจสอบความถูกต้องของ Signature ป้องกันการปลอมแปลงข้อมูล
+func VerifyHMAC(message, secret, signature string) bool {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(message))
+	expectedMAC := mac.Sum(nil)
+	expectedSig := hex.EncodeToString(expectedMAC)
+	return hmac.Equal([]byte(signature), []byte(expectedSig))
+}
