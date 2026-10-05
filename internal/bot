@@ -1,1 +1,35 @@
+// Project Name: TNH-AI-V2-GO-ENGINE-ZERO-GARBAGE
+// Folder Path: /internal/bot/
+// File Name: bot.go
 
+package bot
+
+import (
+	"log"
+	"time"
+)
+
+// BotService โครงสร้างจัดการ Bot
+type BotService struct {
+	BotToken string
+}
+
+// NewBotService สร้างตัวบริการ Bot
+func NewBotService(token string) *BotService {
+	return &BotService{
+		BotToken: token,
+	}
+}
+
+// StartPolling เริ่มต้นระบบรับคำสั่งสำหรับ Telegram / LINE Bot
+func (b *BotService) StartPolling() {
+	log.Println("🤖 [tnh_ai Bot] Polling service started successfully...")
+	
+	// ตัวอย่าง Loop พื้นฐานสำหรับการฟังคำสั่ง
+	go func() {
+		for {
+			// ประมวลผลงานพื้นหลัง
+			time.Sleep(10 * time.Second)
+		}
+	}()
+}
